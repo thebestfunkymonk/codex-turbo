@@ -17,6 +17,7 @@ The GitHub Release also contains a [DotSlash](https://dotslash-cli.com/) file fo
 ```bash
 # Clone the repository and navigate to the root of the Cargo workspace.
 git clone https://github.com/openai/codex.git
+# If you cloned a fork, replace `codex` with your repo folder name.
 cd codex/codex-rs
 
 # Install the Rust toolchain, if necessary.
@@ -24,6 +25,10 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source "$HOME/.cargo/env"
 rustup component add rustfmt
 rustup component add clippy
+# CMake is required for building some dependencies.
+# - macOS: brew install cmake
+# - Ubuntu/Debian: sudo apt-get install -y cmake
+# - Arch: sudo pacman -S cmake
 # Install helper tools used by the workspace justfile:
 cargo install just
 # Optional: install nextest for the `just test` helper
@@ -33,6 +38,7 @@ cargo install cargo-nextest
 cargo build
 
 # Launch the TUI with a sample prompt.
+# If using OpenRouter defaults, export OPENROUTER_API_KEY first.
 cargo run --bin codex -- "explain this codebase to me"
 
 # After making changes, use the root justfile helpers (they default to codex-rs):
