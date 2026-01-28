@@ -107,7 +107,26 @@ pub(crate) fn with_config_overrides(mut model: ModelInfo, config: &Config) -> Mo
 
 // todo(aibrahim): remove most of the entries here when enabling models.json
 pub(crate) fn find_model_info_for_slug(slug: &str) -> ModelInfo {
-    if slug.starts_with("o3") || slug.starts_with("o4-mini") {
+    if slug == "openai/gpt-oss-120b:nitro" {
+        model_info!(
+            slug,
+            apply_patch_tool_type: Some(ApplyPatchToolType::Freeform),
+            supports_parallel_tool_calls: true,
+            shell_type: ConfigShellToolType::ShellCommand,
+            context_window: Some(96_000),
+        )
+    } else if matches!(
+        slug,
+        "minimax/minimax-m2.1:nitro" | "moonshotai/kimi-k2.5:nitro" | "z-ai/glm-4.7:nitro"
+    ) {
+        model_info!(
+            slug,
+            apply_patch_tool_type: Some(ApplyPatchToolType::Freeform),
+            supports_parallel_tool_calls: true,
+            shell_type: ConfigShellToolType::ShellCommand,
+            context_window: Some(128_000),
+        )
+    } else if slug.starts_with("o3") || slug.starts_with("o4-mini") {
         model_info!(
             slug,
             base_instructions: BASE_INSTRUCTIONS_WITH_APPLY_PATCH.to_string(),

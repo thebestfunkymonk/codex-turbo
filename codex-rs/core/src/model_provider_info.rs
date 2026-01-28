@@ -30,6 +30,7 @@ const MAX_REQUEST_MAX_RETRIES: u64 = 100;
 pub const CHAT_WIRE_API_DEPRECATION_SUMMARY: &str = r#"Support for the "chat" wire API is deprecated and will soon be removed. Update your model provider definition in config.toml to use wire_api = "responses"."#;
 
 const OPENAI_PROVIDER_NAME: &str = "OpenAI";
+const OPENROUTER_PROVIDER_NAME: &str = "OpenRouter";
 
 /// Wire protocol that the provider speaks. Most third-party services only
 /// implement the classic OpenAI Chat Completions JSON schema, whereas OpenAI
@@ -257,6 +258,29 @@ impl ModelProviderInfo {
         }
     }
 
+    pub fn create_openrouter_provider() -> ModelProviderInfo {
+        ModelProviderInfo {
+            name: OPENROUTER_PROVIDER_NAME.into(),
+            base_url: Some("https://openrouter.ai/api/v1".to_string()),
+            env_key: Some("OPENROUTER_API_KEY".to_string()),
+            env_key_instructions: Some("Set OPENROUTER_API_KEY to your OpenRouter API key."
+                .to_string()),
+            experimental_bearer_token: None,
+            wire_api: WireApi::Chat,
+            query_params: None,
+            http_headers: Some(
+                [("X-Title".to_string(), "Codex CLI".to_string())]
+                    .into_iter()
+                    .collect(),
+            ),
+            env_http_headers: None,
+            request_max_retries: None,
+            stream_max_retries: None,
+            stream_idle_timeout_ms: None,
+            requires_openai_auth: false,
+        }
+    }
+
     pub fn is_openai(&self) -> bool {
         self.name == OPENAI_PROVIDER_NAME
     }
@@ -278,6 +302,7 @@ pub fn built_in_model_providers() -> HashMap<String, ModelProviderInfo> {
     // open source ("oss") providers by default. Users are encouraged to add to
     // `model_providers` in config.toml to add their own providers.
     [
+        ("openrouter", P::create_openrouter_provider()),
         ("openai", P::create_openai_provider()),
         (
             OLLAMA_OSS_PROVIDER_ID,
