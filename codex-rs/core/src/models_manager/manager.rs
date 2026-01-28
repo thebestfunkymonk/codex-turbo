@@ -66,7 +66,7 @@ impl ModelsManager {
             auth_manager,
             etag: RwLock::new(None),
             cache_manager,
-            provider: ModelProviderInfo::create_openai_provider(),
+            provider: ModelProviderInfo::create_openrouter_provider(),
         }
     }
 

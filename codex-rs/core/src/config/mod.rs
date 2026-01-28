@@ -1382,7 +1382,7 @@ impl Config {
         let model_provider_id = model_provider
             .or(config_profile.model_provider)
             .or(cfg.model_provider)
-            .unwrap_or_else(|| "openai".to_string());
+            .unwrap_or_else(|| "openrouter".to_string());
         let model_provider = model_providers
             .get(&model_provider_id)
             .ok_or_else(|| {
@@ -3534,8 +3534,7 @@ model = "gpt-5.1-codex"
         codex_home: TempDir,
         cfg: ConfigToml,
         model_provider_map: HashMap<String, ModelProviderInfo>,
-        openai_provider: ModelProviderInfo,
-        openai_chat_completions_provider: ModelProviderInfo,
+        openrouter_provider: ModelProviderInfo,
     }
 
     impl PrecedenceTestFixture {
@@ -3607,7 +3606,7 @@ model = "gpt-5.1-codex"
 
     fn create_test_fixture() -> std::io::Result<PrecedenceTestFixture> {
         let toml = r#"
-model = "o3"
+model = "openai/gpt-oss-120b:nitro"
 approval_policy = "untrusted"
 
 # Can be used to determine which profile to use if not specified by
@@ -3617,37 +3616,28 @@ profile = "gpt3"
 [analytics]
 enabled = true
 
-[model_providers.openai-chat-completions]
-name = "OpenAI using Chat Completions"
-base_url = "https://api.openai.com/v1"
-env_key = "OPENAI_API_KEY"
-wire_api = "chat"
-request_max_retries = 4            # retry failed HTTP requests
-stream_max_retries = 10            # retry dropped SSE streams
-stream_idle_timeout_ms = 300000    # 5m idle timeout
-
 [profiles.o3]
-model = "o3"
-model_provider = "openai"
+model = "openai/gpt-oss-120b:nitro"
+model_provider = "openrouter"
 approval_policy = "never"
 model_reasoning_effort = "high"
 model_reasoning_summary = "detailed"
 
 [profiles.gpt3]
-model = "gpt-3.5-turbo"
-model_provider = "openai-chat-completions"
+model = "moonshotai/kimi-k2.5:nitro"
+model_provider = "openrouter"
 
 [profiles.zdr]
-model = "o3"
-model_provider = "openai"
+model = "minimax/minimax-m2.1:nitro"
+model_provider = "openrouter"
 approval_policy = "on-failure"
 
 [profiles.zdr.analytics]
 enabled = false
 
 [profiles.gpt5]
-model = "gpt-5.1"
-model_provider = "openai"
+model = "z-ai/glm-4.7:nitro"
+model_provider = "openrouter"
 approval_policy = "on-failure"
 model_reasoning_effort = "high"
 model_reasoning_summary = "detailed"
@@ -3666,33 +3656,11 @@ model_verbosity = "high"
 
         let codex_home_temp_dir = TempDir::new().unwrap();
 
-        let openai_chat_completions_provider = ModelProviderInfo {
-            name: "OpenAI using Chat Completions".to_string(),
-            base_url: Some("https://api.openai.com/v1".to_string()),
-            env_key: Some("OPENAI_API_KEY".to_string()),
-            wire_api: crate::WireApi::Chat,
-            env_key_instructions: None,
-            experimental_bearer_token: None,
-            query_params: None,
-            http_headers: None,
-            env_http_headers: None,
-            request_max_retries: Some(4),
-            stream_max_retries: Some(10),
-            stream_idle_timeout_ms: Some(300_000),
-            requires_openai_auth: false,
-        };
-        let model_provider_map = {
-            let mut model_provider_map = built_in_model_providers();
-            model_provider_map.insert(
-                "openai-chat-completions".to_string(),
-                openai_chat_completions_provider.clone(),
-            );
-            model_provider_map
-        };
+        let model_provider_map = built_in_model_providers();
 
-        let openai_provider = model_provider_map
-            .get("openai")
-            .expect("openai provider should exist")
+        let openrouter_provider = model_provider_map
+            .get("openrouter")
+            .expect("openrouter provider should exist")
             .clone();
 
         Ok(PrecedenceTestFixture {
@@ -3700,8 +3668,7 @@ model_verbosity = "high"
             codex_home: codex_home_temp_dir,
             cfg,
             model_provider_map,
-            openai_provider,
-            openai_chat_completions_provider,
+            openrouter_provider,
         })
     }
 
@@ -3733,12 +3700,12 @@ model_verbosity = "high"
         )?;
         assert_eq!(
             Config {
-                model: Some("o3".to_string()),
+                model: Some("openai/gpt-oss-120b:nitro".to_string()),
                 review_model: None,
                 model_context_window: None,
                 model_auto_compact_token_limit: None,
-                model_provider_id: "openai".to_string(),
-                model_provider: fixture.openai_provider.clone(),
+                model_provider_id: "openrouter".to_string(),
+                model_provider: fixture.openrouter_provider.clone(),
                 approval_policy: Constrained::allow_any(AskForApproval::Never),
                 sandbox_policy: Constrained::allow_any(SandboxPolicy::new_read_only_policy()),
                 did_user_set_custom_approval_policy_or_sandbox_mode: true,
@@ -3816,12 +3783,12 @@ model_verbosity = "high"
             fixture.codex_home(),
         )?;
         let expected_gpt3_profile_config = Config {
-            model: Some("gpt-3.5-turbo".to_string()),
+            model: Some("moonshotai/kimi-k2.5:nitro".to_string()),
             review_model: None,
             model_context_window: None,
             model_auto_compact_token_limit: None,
-            model_provider_id: "openai-chat-completions".to_string(),
-            model_provider: fixture.openai_chat_completions_provider.clone(),
+            model_provider_id: "openrouter".to_string(),
+            model_provider: fixture.openrouter_provider.clone(),
             approval_policy: Constrained::allow_any(AskForApproval::UnlessTrusted),
             sandbox_policy: Constrained::allow_any(SandboxPolicy::new_read_only_policy()),
             did_user_set_custom_approval_policy_or_sandbox_mode: true,
@@ -3914,12 +3881,12 @@ model_verbosity = "high"
             fixture.codex_home(),
         )?;
         let expected_zdr_profile_config = Config {
-            model: Some("o3".to_string()),
+            model: Some("minimax/minimax-m2.1:nitro".to_string()),
             review_model: None,
             model_context_window: None,
             model_auto_compact_token_limit: None,
-            model_provider_id: "openai".to_string(),
-            model_provider: fixture.openai_provider.clone(),
+            model_provider_id: "openrouter".to_string(),
+            model_provider: fixture.openrouter_provider.clone(),
             approval_policy: Constrained::allow_any(AskForApproval::OnFailure),
             sandbox_policy: Constrained::allow_any(SandboxPolicy::new_read_only_policy()),
             did_user_set_custom_approval_policy_or_sandbox_mode: true,
@@ -3998,12 +3965,12 @@ model_verbosity = "high"
             fixture.codex_home(),
         )?;
         let expected_gpt5_profile_config = Config {
-            model: Some("gpt-5.1".to_string()),
+            model: Some("z-ai/glm-4.7:nitro".to_string()),
             review_model: None,
             model_context_window: None,
             model_auto_compact_token_limit: None,
-            model_provider_id: "openai".to_string(),
-            model_provider: fixture.openai_provider.clone(),
+            model_provider_id: "openrouter".to_string(),
+            model_provider: fixture.openrouter_provider.clone(),
             approval_policy: Constrained::allow_any(AskForApproval::OnFailure),
             sandbox_policy: Constrained::allow_any(SandboxPolicy::new_read_only_policy()),
             did_user_set_custom_approval_policy_or_sandbox_mode: true,

@@ -427,7 +427,7 @@ async fn remote_models_preserve_builtin_presets() -> Result<()> {
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -458,7 +458,7 @@ async fn remote_models_preserve_builtin_presets() -> Result<()> {
     assert!(
         available
             .iter()
-            .any(|model| model.model == "gpt-5.1-codex-max"),
+            .any(|model| model.model == "openai/gpt-oss-120b:nitro"),
         "builtin presets should remain available after refresh"
     );
     assert_eq!(
@@ -492,7 +492,7 @@ async fn remote_models_merge_adds_new_high_priority_first() -> Result<()> {
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -541,7 +541,7 @@ async fn remote_models_merge_replaces_overlapping_model() -> Result<()> {
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -587,7 +587,7 @@ async fn remote_models_merge_preserves_bundled_models_on_empty_response() -> Res
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -635,7 +635,7 @@ async fn remote_models_request_times_out_after_5s() -> Result<()> {
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -653,7 +653,7 @@ async fn remote_models_request_times_out_after_5s() -> Result<()> {
     // get_model should return a default model even when refresh times out
     let default_model = model.expect("get_model should finish and return default model");
     assert!(
-        default_model == "gpt-5.2-codex",
+        default_model == "openai/gpt-oss-120b:nitro",
         "get_model should return default model when refresh times out, got: {default_model}"
     );
     let _ = server
@@ -702,7 +702,7 @@ async fn remote_models_hide_picker_only_models() -> Result<()> {
     let auth = CodexAuth::create_dummy_chatgpt_auth_for_testing();
     let provider = ModelProviderInfo {
         base_url: Some(format!("{}/v1", server.uri())),
-        ..built_in_model_providers()["openai"].clone()
+        ..built_in_model_providers()["openrouter"].clone()
     };
     let manager = ModelsManager::with_provider(
         codex_home.path().to_path_buf(),
@@ -713,7 +713,7 @@ async fn remote_models_hide_picker_only_models() -> Result<()> {
     let selected = manager
         .get_default_model(&None, &config, RefreshStrategy::OnlineIfUncached)
         .await;
-    assert_eq!(selected, "gpt-5.2-codex");
+    assert_eq!(selected, "openai/gpt-oss-120b:nitro");
 
     let available = manager
         .list_models(&config, RefreshStrategy::OnlineIfUncached)
