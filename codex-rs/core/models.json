@@ -13,7 +13,7 @@
       "context_window": 96000,
       "reasoning_summary_format": "none",
       "slug": "openai/gpt-oss-120b:nitro",
-      "display_name": "openai/gpt-oss-120b:nitro",
+      "display_name": "gpt-oss",
       "description": "OpenRouter GPT-OSS 120B (nitro).",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
@@ -52,7 +52,7 @@
       "context_window": 128000,
       "reasoning_summary_format": "none",
       "slug": "minimax/minimax-m2.1:nitro",
-      "display_name": "minimax/minimax-m2.1:nitro",
+      "display_name": "minimax-m2.1",
       "description": "OpenRouter Minimax M2.1 (nitro).",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
@@ -91,7 +91,7 @@
       "context_window": 128000,
       "reasoning_summary_format": "none",
       "slug": "moonshotai/kimi-k2.5:nitro",
-      "display_name": "moonshotai/kimi-k2.5:nitro",
+      "display_name": "kimi-k2.5",
       "description": "OpenRouter Kimi K2.5 (nitro).",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
@@ -130,7 +130,7 @@
       "context_window": 128000,
       "reasoning_summary_format": "none",
       "slug": "z-ai/glm-4.7:nitro",
-      "display_name": "z-ai/glm-4.7:nitro",
+      "display_name": "glm-4.7",
       "description": "OpenRouter GLM-4.7 (nitro).",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [

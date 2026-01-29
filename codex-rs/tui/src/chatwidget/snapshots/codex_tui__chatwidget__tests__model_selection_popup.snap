@@ -1,16 +1,14 @@
 ---
 source: tui/src/chatwidget/tests.rs
+assertion_line: 2984
 expression: popup
 ---
   Select Model and Effort
   Access legacy models by running codex -m <model_name> or in your config.toml
 
-› 1. gpt-5.2-codex (default)  Latest frontier agentic coding model.
-  2. gpt-5.2                  Latest frontier model with improvements across
-                              knowledge, reasoning and coding
-  3. gpt-5.1-codex-max        Codex-optimized flagship for deep and fast
-                              reasoning.
-  4. gpt-5.1-codex-mini       Optimized for codex. Cheaper, faster, but less
-                              capable.
+› 1. gpt-oss (current)  OpenRouter GPT-OSS 120B (nitro).
+  2. minimax-m2.1       OpenRouter Minimax M2.1 (nitro).
+  3. kimi-k2.5          OpenRouter Kimi K2.5 (nitro).
+  4. glm-4.7            OpenRouter GLM-4.7 (nitro).
 
   Press enter to select reasoning effort, or esc to dismiss.

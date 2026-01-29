@@ -1,4 +1,3 @@
-use clap::Args;
 use clap::CommandFactory;
 use clap::Parser;
 use clap_complete::Shell;
@@ -8,7 +7,6 @@ use codex_chatgpt::apply_command::ApplyCommand;
 use codex_chatgpt::apply_command::run_apply_command;
 use codex_cli::LandlockCommand;
 use codex_cli::SeatbeltCommand;
-use codex_cli::WindowsCommand;
 use codex_cli::login::read_api_key_from_stdin;
 use codex_cli::login::run_login_status;
 use codex_cli::login::run_login_with_api_key;
@@ -83,8 +81,6 @@ enum Subcommand {
     /// Remove stored authentication credentials.
     Logout(LogoutCommand),
 
-    /// [experimental] Run the app server or related tooling.
-    AppServer(AppServerCommand),
 
     /// Generate shell completion scripts.
     Completion(CompletionCommand),
@@ -184,8 +180,6 @@ enum SandboxCommand {
     #[clap(visible_alias = "landlock")]
     Linux(LandlockCommand),
 
-    /// Run a command under Windows restricted token (Windows only).
-    Windows(WindowsCommand),
 }
 
 #[derive(Debug, Parser)]
@@ -246,58 +240,6 @@ enum LoginSubcommand {
 struct LogoutCommand {
     #[clap(skip)]
     config_overrides: CliConfigOverrides,
-}
-
-#[derive(Debug, Parser)]
-struct AppServerCommand {
-    /// Omit to run the app server; specify a subcommand for tooling.
-    #[command(subcommand)]
-    subcommand: Option<AppServerSubcommand>,
-
-    /// Controls whether analytics are enabled by default.
-    ///
-    /// Analytics are disabled by default for app-server. Users have to explicitly opt in
-    /// via the `analytics` section in the config.toml file.
-    ///
-    /// However, for first-party use cases like the VSCode IDE extension, we default analytics
-    /// to be enabled by default by setting this flag. Users can still opt out by setting this
-    /// in their config.toml:
-    ///
-    /// ```toml
-    /// [analytics]
-    /// enabled = false
-    /// ```
-    ///
-    /// See https://developers.openai.com/codex/config-advanced/#metrics for more details.
-    #[arg(long = "analytics-default-enabled")]
-    analytics_default_enabled: bool,
-}
-
-#[derive(Debug, clap::Subcommand)]
-enum AppServerSubcommand {
-    /// [experimental] Generate TypeScript bindings for the app server protocol.
-    GenerateTs(GenerateTsCommand),
-
-    /// [experimental] Generate JSON Schema for the app server protocol.
-    GenerateJsonSchema(GenerateJsonSchemaCommand),
-}
-
-#[derive(Debug, Args)]
-struct GenerateTsCommand {
-    /// Output directory where .ts files will be written
-    #[arg(short = 'o', long = "out", value_name = "DIR")]
-    out_dir: PathBuf,
-
-    /// Optional path to the Prettier executable to format generated files
-    #[arg(short = 'p', long = "prettier", value_name = "PRETTIER_BIN")]
-    prettier: Option<PathBuf>,
-}
-
-#[derive(Debug, Args)]
-struct GenerateJsonSchemaCommand {
-    /// Output directory where the schema bundle will be written
-    #[arg(short = 'o', long = "out", value_name = "DIR")]
-    out_dir: PathBuf,
 }
 
 #[derive(Debug, Parser)]
@@ -496,26 +438,6 @@ async fn cli_main(codex_linux_sandbox_exe: Option<PathBuf>) -> anyhow::Result<()
             );
             codex_exec::run_main(exec_cli, codex_linux_sandbox_exe).await?;
         }
-        Some(Subcommand::AppServer(app_server_cli)) => match app_server_cli.subcommand {
-            None => {
-                codex_app_server::run_main(
-                    codex_linux_sandbox_exe,
-                    root_config_overrides,
-                    codex_core::config_loader::LoaderOverrides::default(),
-                    app_server_cli.analytics_default_enabled,
-                )
-                .await?;
-            }
-            Some(AppServerSubcommand::GenerateTs(gen_cli)) => {
-                codex_app_server_protocol::generate_ts(
-                    &gen_cli.out_dir,
-                    gen_cli.prettier.as_deref(),
-                )?;
-            }
-            Some(AppServerSubcommand::GenerateJsonSchema(gen_cli)) => {
-                codex_app_server_protocol::generate_json(&gen_cli.out_dir)?;
-            }
-        },
         Some(Subcommand::Resume(ResumeCommand {
             session_id,
             last,
@@ -617,17 +539,6 @@ async fn cli_main(codex_linux_sandbox_exe: Option<PathBuf>) -> anyhow::Result<()
                 );
                 codex_cli::debug_sandbox::run_command_under_landlock(
                     landlock_cli,
-                    codex_linux_sandbox_exe,
-                )
-                .await?;
-            }
-            SandboxCommand::Windows(mut windows_cli) => {
-                prepend_config_flags(
-                    &mut windows_cli.config_overrides,
-                    root_config_overrides.clone(),
-                );
-                codex_cli::debug_sandbox::run_command_under_windows(
-                    windows_cli,
                     codex_linux_sandbox_exe,
                 )
                 .await?;
@@ -933,14 +844,6 @@ mod tests {
         assert_eq!(args.prompt.as_deref(), Some("2+2"));
     }
 
-    fn app_server_from_args(args: &[&str]) -> AppServerCommand {
-        let cli = MultitoolCli::try_parse_from(args).expect("parse");
-        let Subcommand::AppServer(app_server) = cli.subcommand.expect("app-server present") else {
-            unreachable!()
-        };
-        app_server
-    }
-
     fn sample_exit_info(conversation: Option<&str>) -> AppExitInfo {
         let token_usage = TokenUsage {
             output_tokens: 2,
@@ -1139,19 +1042,6 @@ mod tests {
         let interactive = finalize_fork_from_args(["codex", "fork", "--all"].as_ref());
         assert!(interactive.fork_picker);
         assert!(interactive.fork_show_all);
-    }
-
-    #[test]
-    fn app_server_analytics_default_disabled_without_flag() {
-        let app_server = app_server_from_args(["codex", "app-server"].as_ref());
-        assert!(!app_server.analytics_default_enabled);
-    }
-
-    #[test]
-    fn app_server_analytics_default_enabled_with_flag() {
-        let app_server =
-            app_server_from_args(["codex", "app-server", "--analytics-default-enabled"].as_ref());
-        assert!(app_server.analytics_default_enabled);
     }
 
     #[test]

@@ -213,6 +213,18 @@ mod tests {
     #[tokio::test]
     async fn test_create_client_sets_default_headers() {
         skip_if_no_network!();
+        if [
+            "HTTP_PROXY",
+            "HTTPS_PROXY",
+            "http_proxy",
+            "https_proxy",
+        ]
+        .iter()
+        .any(|key| std::env::var(key).is_ok())
+        {
+            println!("Skipping test because proxy env vars are set.");
+            return;
+        }
 
         use wiremock::Mock;
         use wiremock::MockServer;

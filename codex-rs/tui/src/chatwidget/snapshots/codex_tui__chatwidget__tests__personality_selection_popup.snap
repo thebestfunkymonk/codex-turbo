@@ -1,9 +1,11 @@
 ---
 source: tui/src/chatwidget/tests.rs
+assertion_line: 2994
 expression: popup
 ---
   Select Personality
   Choose a communication style for future responses.
+  Current model (openai/gpt-oss-120b:nitro) doesn't support personalities. Try
 
 › 1. Friendly   Warm, collaborative, and helpful.
   2. Pragmatic  Concise, task-focused, and direct.

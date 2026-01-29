@@ -54,7 +54,7 @@ When choosing a `prefix_rule`, request one that will allow you to fulfill simila
 ["pytest"]
 </good_example>
 <bad_example reason="too specific">
-["cargo", "test", "-p", "codex-app-server"]
+["cargo", "test", "-p", "codex-core"]
 <correction_to_good_example>
 ["cargo", "test"]
 </correction_to_good_example>

@@ -21,12 +21,11 @@ PACKAGE_NATIVE_COMPONENTS: dict[str, list[str]] = {
     "codex-sdk": ["codex"],
 }
 WINDOWS_ONLY_COMPONENTS: dict[str, list[str]] = {
-    "codex": ["codex-windows-sandbox-setup", "codex-command-runner"],
+    "codex": ["codex-command-runner"],
 }
 COMPONENT_DEST_DIR: dict[str, str] = {
     "codex": "codex",
     "codex-responses-api-proxy": "codex-responses-api-proxy",
-    "codex-windows-sandbox-setup": "codex",
     "codex-command-runner": "codex",
     "rg": "path",
 }
