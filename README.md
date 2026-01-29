@@ -4,8 +4,6 @@
 </p>
 </br>
 
----
-
 ## Docs
 
 - [**Codex Documentation**](https://developers.openai.com/codex)
