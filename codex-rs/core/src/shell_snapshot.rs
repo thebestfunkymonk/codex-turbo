@@ -471,6 +471,16 @@ mod tests {
 
     use tempfile::tempdir;
 
+    #[cfg(target_os = "linux")]
+    fn sh_login_shell_usable() -> bool {
+        Command::new("/bin/sh")
+            .arg("-lc")
+            .arg("true")
+            .status()
+            .map(|status| status.success())
+            .unwrap_or(false)
+    }
+
     #[cfg(not(target_os = "windows"))]
     fn assert_posix_snapshot_sections(snapshot: &str) {
         assert!(snapshot.contains("# Snapshot file"));
@@ -554,6 +564,10 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn timed_out_snapshot_shell_is_terminated() -> Result<()> {
+        if !sh_login_shell_usable() {
+            println!("Skipping test because /bin/sh login shell is not usable.");
+            return Ok(());
+        }
         use std::process::Stdio;
         use tokio::time::Duration as TokioDuration;
         use tokio::time::Instant;
@@ -622,6 +636,10 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn linux_sh_snapshot_includes_sections() -> Result<()> {
+        if !sh_login_shell_usable() {
+            println!("Skipping test because /bin/sh login shell is not usable.");
+            return Ok(());
+        }
         let snapshot = get_snapshot(ShellType::Sh).await?;
         assert_posix_snapshot_sections(&snapshot);
         Ok(())

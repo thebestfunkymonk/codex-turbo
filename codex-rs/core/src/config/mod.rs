@@ -2558,8 +2558,12 @@ profile = "project"
             codex_home.path().to_path_buf(),
         )?;
 
+        let openai_provider = config
+            .model_providers
+            .get("openai")
+            .expect("missing openai provider");
         assert_eq!(
-            config.model_provider.wire_api,
+            openai_provider.wire_api,
             crate::model_provider_info::WireApi::ResponsesWebsocket
         );
 

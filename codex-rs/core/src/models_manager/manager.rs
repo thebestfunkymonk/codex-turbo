@@ -372,6 +372,17 @@ mod tests {
     use tempfile::tempdir;
     use wiremock::MockServer;
 
+    fn proxy_env_set() -> bool {
+        [
+            "HTTP_PROXY",
+            "HTTPS_PROXY",
+            "http_proxy",
+            "https_proxy",
+        ]
+        .iter()
+        .any(|key| std::env::var(key).is_ok())
+    }
+
     fn remote_model(slug: &str, display: &str, priority: i32) -> ModelInfo {
         remote_model_with_visibility(slug, display, priority, "list")
     }
@@ -437,6 +448,10 @@ mod tests {
 
     #[tokio::test]
     async fn refresh_available_models_sorts_by_priority() {
+        if proxy_env_set() {
+            println!("Skipping test because proxy env vars are set.");
+            return;
+        }
         let server = MockServer::start().await;
         let remote_models = vec![
             remote_model("priority-low", "Low", 1),
@@ -494,6 +509,10 @@ mod tests {
 
     #[tokio::test]
     async fn refresh_available_models_uses_cache_when_fresh() {
+        if proxy_env_set() {
+            println!("Skipping test because proxy env vars are set.");
+            return;
+        }
         let server = MockServer::start().await;
         let remote_models = vec![remote_model("cached", "Cached", 5)];
         let models_mock = mount_models_once(
@@ -541,6 +560,10 @@ mod tests {
 
     #[tokio::test]
     async fn refresh_available_models_refetches_when_cache_stale() {
+        if proxy_env_set() {
+            println!("Skipping test because proxy env vars are set.");
+            return;
+        }
         let server = MockServer::start().await;
         let initial_models = vec![remote_model("stale", "Stale", 1)];
         let initial_mock = mount_models_once(
@@ -610,6 +633,10 @@ mod tests {
 
     #[tokio::test]
     async fn refresh_available_models_drops_removed_remote_models() {
+        if proxy_env_set() {
+            println!("Skipping test because proxy env vars are set.");
+            return;
+        }
         let server = MockServer::start().await;
         let initial_models = vec![remote_model("remote-old", "Remote Old", 1)];
         let initial_mock = mount_models_once(

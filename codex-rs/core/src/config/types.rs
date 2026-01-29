@@ -468,9 +468,9 @@ const fn default_true() -> bool {
     true
 }
 
-/// Settings for notices we display to users via the tui and app-server clients
-/// (primarily the Codex IDE extension). NOTE: these are different from
-/// notifications - notices are warnings, NUX screens, acknowledgements, etc.
+/// Settings for notices we display to users via the tui and other clients.
+/// NOTE: these are different from notifications - notices are warnings, NUX
+/// screens, acknowledgements, etc.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema)]
 pub struct Notice {
     /// Tracks whether the user has acknowledged the full access warning prompt.

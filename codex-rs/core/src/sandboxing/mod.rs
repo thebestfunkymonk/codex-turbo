@@ -152,9 +152,8 @@ impl SandboxManager {
                     Some("codex-linux-sandbox".to_string()),
                 )
             }
-            // On Windows, the restricted token sandbox executes in-process via the
-            // codex-windows-sandbox crate. We leave the command unchanged here and
-            // branch during execution based on the sandbox type.
+            // On Windows, the restricted token sandbox is not supported in this build.
+            // We leave the command unchanged and fall back to the default executor.
             #[cfg(target_os = "windows")]
             SandboxType::WindowsRestrictedToken => (command, HashMap::new(), None),
             // When building for non-Windows targets, this variant is never constructed.

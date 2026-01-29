@@ -30,7 +30,7 @@ static PRESETS: Lazy<Vec<ModelPreset>> = Lazy::new(|| {
         ModelPreset {
             id: "openai/gpt-oss-120b:nitro".to_string(),
             model: "openai/gpt-oss-120b:nitro".to_string(),
-            display_name: "openai/gpt-oss-120b:nitro".to_string(),
+            display_name: "gpt-oss".to_string(),
             description: "OpenRouter GPT-OSS 120B (nitro).".to_string(),
             default_reasoning_effort: ReasoningEffort::Medium,
             supported_reasoning_efforts: default_reasoning_efforts(),
@@ -43,7 +43,7 @@ static PRESETS: Lazy<Vec<ModelPreset>> = Lazy::new(|| {
         ModelPreset {
             id: "minimax/minimax-m2.1:nitro".to_string(),
             model: "minimax/minimax-m2.1:nitro".to_string(),
-            display_name: "minimax/minimax-m2.1:nitro".to_string(),
+            display_name: "minimax-m2.1".to_string(),
             description: "OpenRouter Minimax M2.1 (nitro).".to_string(),
             default_reasoning_effort: ReasoningEffort::Medium,
             supported_reasoning_efforts: default_reasoning_efforts(),
@@ -56,7 +56,7 @@ static PRESETS: Lazy<Vec<ModelPreset>> = Lazy::new(|| {
         ModelPreset {
             id: "moonshotai/kimi-k2.5:nitro".to_string(),
             model: "moonshotai/kimi-k2.5:nitro".to_string(),
-            display_name: "moonshotai/kimi-k2.5:nitro".to_string(),
+            display_name: "kimi-k2.5".to_string(),
             description: "OpenRouter Kimi K2.5 (nitro).".to_string(),
             default_reasoning_effort: ReasoningEffort::Medium,
             supported_reasoning_efforts: default_reasoning_efforts(),
@@ -69,7 +69,7 @@ static PRESETS: Lazy<Vec<ModelPreset>> = Lazy::new(|| {
         ModelPreset {
             id: "z-ai/glm-4.7:nitro".to_string(),
             model: "z-ai/glm-4.7:nitro".to_string(),
-            display_name: "z-ai/glm-4.7:nitro".to_string(),
+            display_name: "glm-4.7".to_string(),
             description: "OpenRouter GLM-4.7 (nitro).".to_string(),
             default_reasoning_effort: ReasoningEffort::Medium,
             supported_reasoning_efforts: default_reasoning_efforts(),

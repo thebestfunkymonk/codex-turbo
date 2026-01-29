@@ -273,7 +273,7 @@ fn is_standard_tool_call(parsed_cmd: &[ParsedCommand]) -> bool {
 }
 
 const RATE_LIMIT_WARNING_THRESHOLDS: [f64; 3] = [75.0, 90.0, 95.0];
-const NUDGE_MODEL_SLUG: &str = "gpt-5.1-codex-mini";
+const NUDGE_MODEL_SLUG: &str = "minimax/minimax-m2.1:nitro";
 const RATE_LIMIT_SWITCH_PROMPT_THRESHOLD: f64 = 90.0;
 
 #[derive(Default)]
@@ -4152,26 +4152,8 @@ impl ChatWidget {
 
     #[cfg(target_os = "windows")]
     pub(crate) fn world_writable_warning_details(&self) -> Option<(Vec<String>, usize, bool)> {
-        if self
-            .config
-            .notices
-            .hide_world_writable_warning
-            .unwrap_or(false)
-        {
-            return None;
-        }
-        let cwd = self.config.cwd.clone();
-        let env_map: std::collections::HashMap<String, String> = std::env::vars().collect();
-        match codex_windows_sandbox::apply_world_writable_scan_and_denies(
-            self.config.codex_home.as_path(),
-            cwd.as_path(),
-            &env_map,
-            self.config.sandbox_policy.get(),
-            Some(self.config.codex_home.as_path()),
-        ) {
-            Ok(_) => None,
-            Err(_) => Some((Vec::new(), 0, true)),
-        }
+        let _ = self;
+        None
     }
 
     #[cfg(not(target_os = "windows"))]
